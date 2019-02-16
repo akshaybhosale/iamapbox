@@ -37,14 +37,17 @@ import com.mapbox.mapboxsdk.plugins.locationlayer.LocationLayerPlugin;
 import java.util.List;
 //import com.mapbox.android.core.location.LocationEngineListener;
 
-public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, PermissionsListener, LocationListener {
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, PermissionsListener {
 
     private LocationLayerPlugin locationLayerPlugin;
     private MapView mapView;
     private MapboxMap mapboxMap;
     private PermissionsManager permissionsManager;
-    private LocationEngine locationEngine;
-    private Location lastLocation;
+    //private LocationEngine locationEngine;
+    private Location ialastLocation;
+    private float iaBearing;
+    private int iaFloor;
+   // private Location gpslastLocation;
     private LocationComponent locationComponent;
     private Style mStyle;
     private boolean mCameraPositionNeedsUpdating = true; // update on first location
@@ -53,26 +56,23 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private IALocationListener mListener = new IALocationListenerSupport() {
 
-        /**
-         * Location changed, move marker and camera position.
-         */
         @Override
         public void onLocationChanged(IALocation location) {
 
-            Log.d("loc tag", "new location received with coordinates: " + location.getLatitude()
-                    + "," + location.getLongitude());
-            lastLocation= new Location("");
-            lastLocation.setLatitude(location.getLatitude());
-            lastLocation.setLongitude(location.getLongitude());
 
-            if (mapboxMap == null) {
-                // location received before map is initialized, ignoring update here
-                return;
-            }
+            ialastLocation = new Location("");
+            ialastLocation.setLatitude(location.getLatitude());
+            ialastLocation.setLongitude(location.getLongitude());
+            iaBearing=location.getBearing();
+            iaFloor=location.getFloorLevel();
+            Log.d("loc tag", "new location received with coordinates from ia: " + ialastLocation.getLatitude()
+                    + "," + ialastLocation.getLongitude());
+            Log.d("locationDeatails",String.valueOf(location));
+
 
             final LatLng center = new LatLng(location.getLatitude(), location.getLongitude());
 
-               enableLocationComponent(mStyle);
+            enableLocationComponent(mStyle);
 
 
             // our camera position needs updating if location has significantly changed
@@ -81,34 +81,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 mCameraPositionNeedsUpdating = false;
             }
         }
+
+
     };
-
-    @Override
-    public void onLocationChanged(Location location) {
-
-            Log.d("loc tag", "new LocationService location received with coordinates: " + location.getLatitude()
-                    + "," + location.getLongitude());
-            lastLocation=location;
-
-            enableLocationComponent(mStyle);
-
-    }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-
-    }
-
 
 
     @Override
@@ -119,11 +94,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         findViewById(android.R.id.content).setKeepScreenOn(true);
 
         mIALocationManager = IALocationManager.create(this);
-        startListeningPlatformLocations();
-
         mapView=findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
+
+        mIALocationManager.requestLocationUpdates(IALocationRequest.create(), mListener);
     }
 
     @Override
@@ -147,8 +122,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             // Get an instance of the component
             locationComponent = mapboxMap.getLocationComponent();
-            if (lastLocation != null) {
-               locationComponent.forceLocationUpdate(lastLocation);
+
+            if (ialastLocation != null) {
+                    //Log.d("latlng from", String.valueOf(ialastLocation));
+                    locationComponent.forceLocationUpdate(ialastLocation);
             }
             else {
                 Toast.makeText(this, "lastLocation empty",Toast.LENGTH_SHORT).show();
@@ -162,10 +139,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             locationComponent.setLocationComponentEnabled(true);
 
             // Set the component's camera mode
-            locationComponent.setCameraMode(CameraMode.TRACKING);
+            locationComponent.setCameraMode(CameraMode.TRACKING_COMPASS);
 
             // Set the component's render mode
             locationComponent.setRenderMode(RenderMode.COMPASS);
+
+            //tilt the camera
+            //locationComponent.tiltWhileTracking(iaBearing,2000);
+
+
         } else {
             permissionsManager = new PermissionsManager((PermissionsListener) this);
             permissionsManager.requestLocationPermissions(this);
@@ -221,6 +203,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onStop(){
         super.onStop();
         mapView.onStop();
+        mIALocationManager.removeLocationUpdates(mListener);
     }
     @Override
     protected void onSaveInstanceState(Bundle outState){
@@ -240,25 +223,4 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mapView.onDestroy();
 
     }
-
-    private void startListeningPlatformLocations() {
-        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        if (locationManager != null) {
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
-                return;
-            }
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
-        }
-    }
-
-
-
 }
