@@ -1,6 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
+
+    
+        compileOptions {
+            sourceCompatibility JavaVersion.VERSION_1_8
+            targetCompatibility JavaVersion.VERSION_1_8
+        }
+
+
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.example.mohdadil.visit21"
@@ -37,6 +45,8 @@ dependencies {
     implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-locationlayer:0.11.0'
     implementation 'com.mapbox.mapboxsdk:mapbox-android-core:1.1.0'
     implementation 'com.mapbox.mapboxsdk:mapbox-sdk-geojson:4.3.0'
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-annotation-v7:0.5.0'
+
 
 }
 repositories {
