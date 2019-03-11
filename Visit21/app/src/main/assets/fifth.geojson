@@ -39,7 +39,7 @@
       "properties": {
         "name": "ELECT-LAB-10",
         "description": "ELECT-LAB-10",
-        "poi": "lab",
+        "poi": "hardware",
         "selected": "false"
       },
       "geometry": {
@@ -56,7 +56,7 @@
       "properties": {
         "name": "Elevator",
         "description": "Elevator Girls",
-        "poi": "lift",
+        "poi": "landmark",
         "selected": "false"
       },
       "geometry": {
@@ -73,7 +73,7 @@
       "properties": {
         "name": "LAB-510",
         "description": "EXTC LAB 10",
-        "poi": "lab",
+        "poi": "hardware",
         "selected": "false"
       },
       "geometry": {
@@ -124,7 +124,7 @@
       "properties": {
         "name": "Water Filter",
         "description": "Girls Water Filter",
-        "poi": "filter",
+        "poi": "drinking-water",
         "selected": "false"
       },
       "geometry": {
@@ -141,7 +141,7 @@
       "properties": {
         "name": "LAB-508",
         "description": "EXTC LAB 08",
-        "poi": "lab",
+        "poi": "hardware",
         "selected": "false"
       },
       "geometry": {
@@ -158,7 +158,7 @@
       "properties": {
         "name": "Water Filter",
         "description": "Gents Water Filter",
-        "poi": "filter",
+        "poi": "drinking-water",
         "selected": "false"
       },
       "geometry": {
@@ -175,7 +175,7 @@
       "properties": {
         "name": "LAB-506",
         "description": "IT LAB 06",
-        "poi": "lab",
+        "poi": "hardware",
         "selected": "false"
       },
       "geometry": {
@@ -192,7 +192,7 @@
       "properties": {
         "name": "LAB-502",
         "description": "IT LAB 02",
-        "poi": "lab",
+        "poi": "hardware",
         "selected": "false"
       },
       "geometry": {
@@ -209,7 +209,7 @@
       "properties": {
         "name": "EXTC ME Tutorial Room",
         "description": "Tutorial Room",
-        "poi": "lab",
+        "poi": "hardware",
         "selected": "false"
       },
       "geometry": {
@@ -226,7 +226,7 @@
       "properties": {
         "name": "LAB-507",
         "description": "IT LAB 07",
-        "poi": "lab",
+        "poi": "hardware",
         "selected": "false"
       },
       "geometry": {
@@ -243,7 +243,7 @@
       "properties": {
         "name": "LAB-509",
         "description": "EXTC LAB 09",
-        "poi": "lab",
+        "poi": "hardware",
         "selected": "false"
       },
       "geometry": {
@@ -260,7 +260,7 @@
       "properties": {
         "name": "LAB-501",
         "description": "IT LAB 01",
-        "poi": "lab",
+        "poi": "hardware",
         "selected": "false"
       },
       "geometry": {
@@ -277,7 +277,7 @@
       "properties": {
         "name": "IT-LAB-09",
         "description": "IT-LAB-09",
-        "poi": "lab",
+        "poi": "hardware",
         "selected": "false"
       },
       "geometry": {
@@ -294,7 +294,7 @@
       "properties": {
         "name": "LAB-503",
         "description": "IT LAB 03",
-        "poi": "lab",
+        "poi": "hardware",
         "selected": "false"
       },
       "geometry": {
@@ -311,7 +311,7 @@
       "properties": {
         "name": "LAB-504",
         "description": "IT LAB 04",
-        "poi": "lab",
+        "poi": "hardware",
         "selected": "false"
       },
       "geometry": {
@@ -328,7 +328,7 @@
       "properties": {
         "name": "EXTC Me Tutorial Room",
         "description": "Tutorial Room",
-        "poi": "lab",
+        "poi": "hardware",
         "selected": "false"
       },
       "geometry": {
@@ -345,7 +345,7 @@
       "properties": {
         "name": "LAB-505",
         "description": "IT LAB 05",
-        "poi": "lab",
+        "poi": "hardware",
         "selected": "false"
       },
       "geometry": {
@@ -362,7 +362,7 @@
       "properties": {
         "name": "Elevator",
         "description": "Elevator Boys",
-        "poi": "lift",
+        "poi": "landmark",
         "selected": "false"
       },
       "geometry": {
@@ -379,7 +379,7 @@
       "properties": {
         "name": "IT-LAB-08",
         "description": "IT-LAB-08",
-        "poi": "lab",
+        "poi": "hardware",
         "selected": "false"
       },
       "geometry": {

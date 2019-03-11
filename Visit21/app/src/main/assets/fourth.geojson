@@ -90,7 +90,7 @@
       "properties": {
         "name": "robocon room",
         "description": "robocon room",
-        "poi": "restaurant",
+        "poi": "rocket",
         "selected": false
       },
       "geometry": {
@@ -124,7 +124,7 @@
       "properties": {
         "name": "boys side lift 4th floor",
         "description": "boys side lift",
-        "poi": "restaurant",
+        "poi": "entrance",
         "selected": false
       },
       "geometry": {
@@ -141,7 +141,7 @@
       "properties": {
         "name": "girls side lift 4th floor",
         "description": "girls side lift 4th floor",
-        "poi": "restaurant",
+        "poi": "entrance",
         "selected": false
       },
       "geometry": {
@@ -260,7 +260,7 @@
       "properties": {
         "name": "girls side stairs 4th floor",
         "description": "girls side stairs",
-        "poi": "restaurant",
+        "poi": "pitch",
         "selected": false
       },
       "geometry": {
@@ -328,7 +328,7 @@
       "properties": {
         "name": "server side room",
         "description": "server side room",
-        "poi": "restaurant",
+        "poi": "museum",
         "selected": false
       },
       "geometry": {
@@ -345,7 +345,7 @@
       "properties": {
         "name": "server room",
         "description": "server room",
-        "poi": "restaurant",
+        "poi": "communications-tower",
         "selected": false
       },
       "geometry": {
@@ -362,7 +362,7 @@
       "properties": {
         "name": "boys stairs 4th floor",
         "description": "boys stairs",
-        "poi": "restaurant",
+        "poi": "pitch",
         "selected": false
       },
       "geometry": {

@@ -31,9 +31,11 @@ import com.indooratlas.android.sdk.IALocation;
 import com.indooratlas.android.sdk.IALocationListener;
 import com.indooratlas.android.sdk.IALocationManager;
 import com.indooratlas.android.sdk.IALocationRequest;
+import com.indooratlas.android.sdk.IARegion;
 import com.indooratlas.android.sdk.IARoute;
 import com.indooratlas.android.sdk.IAWayfindingListener;
 import com.indooratlas.android.sdk.IAWayfindingRequest;
+import com.indooratlas.android.sdk.resources.IAFloorPlan;
 import com.indooratlas.android.sdk.resources.IALocationListenerSupport;
 import com.mapbox.android.core.location.LocationEngine;
 import com.mapbox.android.core.permissions.PermissionsListener;
@@ -57,6 +59,7 @@ import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.mapboxsdk.maps.Style;
 import com.mapbox.mapboxsdk.plugins.locationlayer.LocationLayerOptions;
 import com.mapbox.mapboxsdk.plugins.locationlayer.LocationLayerPlugin;
+import com.mapbox.mapboxsdk.style.expressions.Expression;
 import com.mapbox.mapboxsdk.style.layers.FillExtrusionLayer;
 import com.mapbox.mapboxsdk.style.layers.FillLayer;
 import com.mapbox.mapboxsdk.style.layers.Layer;
@@ -90,6 +93,7 @@ import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.fillOpacity;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAllowOverlap;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconImage;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconSize;
+import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconTextFit;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineColor;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineOpacity;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineWidth;
@@ -102,6 +106,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private MapView mapView;
     private MapboxMap mapboxMap;
     private PermissionsManager permissionsManager;
+    private  Boolean check=false;
+
+
     private Location ialastLocation;
     private float iaBearing;
     private int iaFloor;
@@ -113,6 +120,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private List<List<Point>> boundingBoxList;
     private View levelButtons;
     private Button currButton;
+    private Button navi1;
     private Button buttonFifthLevel;
     private Button buttonfourthLevel;
     private FeatureCollection featureCollection;
@@ -200,9 +208,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             ialastLocation.setLongitude(location.getLongitude());
             iaBearing=location.getBearing();
             iaFloor=location.getFloorLevel();
-            Log.d("loc tag", "new location received with coordinates from ia: " + ialastLocation.getLatitude()
-                    + "," + ialastLocation.getLongitude());
-            Log.d("locationDeatails",String.valueOf(location));
+//            Log.d("loc tag", "new location received with coordinates from ia: " + ialastLocation.getLatitude()
+//                    + "," + ialastLocation.getLongitude());
+//            Log.d("locationDeatails",String.valueOf(location));
 
 
             final LatLng center = new LatLng(location.getLatitude(), location.getLongitude());
@@ -225,6 +233,31 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     };
 
+    private IAFloorPlan FloorPlan;
+    private String FloorPlanId;
+    private String RegionId;
+
+    private IARegion.Listener mRegionListener =new IARegion.Listener() {
+        @Override
+        public void onEnterRegion(IARegion iaRegion) {
+            if(RegionId==null){
+                Log.d("region id: ",String.valueOf(iaRegion.getVenue().getId()));
+                RegionId=iaRegion.getVenue().getId();
+            }
+
+           FloorPlan=iaRegion.getFloorPlan();
+           if(FloorPlan!=null){
+               FloorPlanId=FloorPlan.getId();
+               Log.d("floor id : ",FloorPlanId);
+           }
+        }
+
+        @Override
+        public void onExitRegion(IARegion iaRegion) {
+            //Log.d("Exited region:  ",String.valueOf(iaRegion.getName()));
+        }
+    };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -239,6 +272,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mapView.getMapAsync(this);
 
         mIALocationManager.requestLocationUpdates(IALocationRequest.create(), mListener);
+        mIALocationManager.registerRegionListener(mRegionListener);
     }
 
     @Override
@@ -260,9 +294,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                     mapboxMap.addOnCameraMoveListener(() -> {
                         if(mapboxMap.getCameraPosition().zoom < 21){
-                            if(cardVisible){
+                            if(cardVisible && !check){
                                 poiCard = (LinearLayout)findViewById(R.id.poicard);
                                 poiCard.setVisibility(View.GONE);
+                                cardVisible=false;
                             }
                         }
                         if (mapboxMap.getCameraPosition().zoom > 18) {
@@ -276,6 +311,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                             hideLevelButton();
                         }
                     });
+
 
                     indoorBuildingSource = new GeoJsonSource(
                             "indoor-building", loadJsonFromAsset("fourth.geojson"));
@@ -291,12 +327,16 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     mapboxMap.addOnMapClickListener(this);
                 });
 
+
+
+
+
         buttonFifthLevel = findViewById(R.id.fifth_level_button);
         buttonFifthLevel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 indoorBuildingSource.setGeoJson(loadJsonFromAsset("fifth.geojson"));
-                featureCollection = FeatureCollection.fromJson("fifth.geojson");
+                featureCollection = FeatureCollection.fromJson(loadJsonFromAsset("fifth.geojson"));
                 setupLayer();
                     DeactiveButton(currButton);
                     currButton=buttonFifthLevel;
@@ -309,7 +349,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onClick(View view) {
                 indoorBuildingSource.setGeoJson(loadJsonFromAsset("fourth.geojson"));
-                featureCollection = FeatureCollection.fromJson("fourth.geojson");
+                featureCollection = FeatureCollection.fromJson(loadJsonFromAsset("fourth.geojson"));
                 setupLayer();
                     DeactiveButton(currButton);
                     currButton=buttonfourthLevel;
@@ -333,9 +373,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 fillExtrusionOpacity(0.7f),
                 fillExtrusionHeight((float)3)));
         mStyle.addLayer(new SymbolLayer("poi-layer","indoor-building").withProperties(
-                iconImage("{poi}-15"),
-                iconAllowOverlap(true),
-                iconSize(1f))
+                    iconImage("{poi}-15"),
+                    iconAllowOverlap(true),
+                    iconSize(1f),
+                    iconTextFit(Expression.get("name"))
+                )
         );
 
     }
@@ -426,7 +468,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onResume();
         mapView.onResume();
         mIALocationManager.requestLocationUpdates(IALocationRequest.create(), mListener);
-        //mIALocationManager.registerRegionListener(mRegionListener);
+        mIALocationManager.registerRegionListener(mRegionListener);
     }
 
     @Override
@@ -434,6 +476,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onPause();
         mapView.onPause();
         mIALocationManager.removeLocationUpdates(mListener);
+        mIALocationManager.registerRegionListener(mRegionListener);
     }
     @Override
     protected void onStop(){
@@ -478,30 +521,30 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         levelButtons.setVisibility(View.VISIBLE);
     }
 
-    private void loadBuildingLayer(@NonNull Style style) {
-        // Method used to load the indoor layer on the map. First the fill layer is drawn and then the
-        // line layer is added.
-
-        FillLayer indoorBuildingLayer = new FillLayer("indoor-building-fill", "indoor-building").withProperties(
-                fillColor(Color.parseColor("#eeeeee")),
-                // Function.zoom is used here to fade out the indoor layer if zoom level is beyond 16. Only
-                // necessary to show the indoor map at high zoom levels.
-                fillOpacity(interpolate(exponential(1f), zoom(),
-                        stop(16f, 0f),
-                        stop(16.5f, 0.5f),
-                        stop(17f, 1f))));
-
-        style.addLayer(indoorBuildingLayer);
-
-        LineLayer indoorBuildingLineLayer = new LineLayer("indoor-building-line", "indoor-building").withProperties(
-                lineColor(Color.parseColor("#50667f")),
-                lineWidth(0.5f),
-                lineOpacity(interpolate(exponential(1f), zoom(),
-                        stop(16f, 0f),
-                        stop(16.5f, 0.5f),
-                        stop(17f, 1f))));
-        style.addLayer(indoorBuildingLineLayer);
-    }
+//    private void loadBuildingLayer(@NonNull Style style) {
+//        // Method used to load the indoor layer on the map. First the fill layer is drawn and then the
+//        // line layer is added.
+//
+//        FillLayer indoorBuildingLayer = new FillLayer("indoor-building-fill", "indoor-building").withProperties(
+//                fillColor(Color.parseColor("#eeeeee")),
+//                // Function.zoom is used here to fade out the indoor layer if zoom level is beyond 16. Only
+//                // necessary to show the indoor map at high zoom levels.
+//                fillOpacity(interpolate(exponential(1f), zoom(),
+//                        stop(16f, 0f),
+//                        stop(16.5f, 0.5f),
+//                        stop(17f, 1f))));
+//
+//        style.addLayer(indoorBuildingLayer);
+//
+//        LineLayer indoorBuildingLineLayer = new LineLayer("indoor-building-line", "indoor-building").withProperties(
+//                lineColor(Color.parseColor("#50667f")),
+//                lineWidth(0.5f),
+//                lineOpacity(interpolate(exponential(1f), zoom(),
+//                        stop(16f, 0f),
+//                        stop(16.5f, 0.5f),
+//                        stop(17f, 1f))));
+//        style.addLayer(indoorBuildingLineLayer);
+//    }
 
     private String loadJsonFromAsset(String filename) {
         // Using this method to load in GeoJSON files from the assets folder.
@@ -583,8 +626,53 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
 
+
+
+
+
+
     @Override
     public boolean onMapClick(@NonNull LatLng point) {
+
+
+
+        navi1 = findViewById(R.id.poinavigatebutton);
+        navi1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // indoorBuildingSource.setGeoJson(loadJsonFromAsset("fifth.geojson"));
+                if(check) {
+
+                    navi1.setText("start navigation");
+                    mCurrentRoute = null;
+                    mWayfindingDestination = null;
+                    mIALocationManager.removeWayfindingUpdates();
+                    updateRouteVisualization();
+                    check = false;
+
+                }
+                else
+                {
+                    check = true;
+
+
+                    mWayfindingDestination = new IAWayfindingRequest.Builder()
+                            .withFloor(4)
+                            .withLatitude(point.getLatitude())
+                            .withLongitude(point.getLongitude())
+                            .build();
+
+                    mIALocationManager.requestWayfindingUpdates(mWayfindingDestination, mWayfindingListener);
+                    navi1.setText("cancel navigation");
+                    cardVisible=true;
+                    poiCard.setVisibility(View.VISIBLE);
+
+                }
+            }
+        });
+
+
+        //....................................................................................................................................
         final PointF pixel = mapboxMap.getProjection().toScreenLocation(point);
         List<Feature> features = mapboxMap.queryRenderedFeatures(pixel, "poi-layer");
         if(!features.isEmpty()){
@@ -600,6 +688,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
         return false;
     }
+
+
+    // ........................................................................................................................................
 
     private void setSelected(int index, boolean flag){
         deselectAll();
@@ -619,8 +710,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 descriptionTextView=(TextView)findViewById(R.id.description);
                 nameTextView.setText(feature.getStringProperty("name"));
                 descriptionTextView.setText(feature.getStringProperty("description"));
-                Log.d("name: ",(String) nameTextView.getText());
-                Log.d("description: ",(String) descriptionTextView.getText());
                 cardVisible=true;
                 poiCard.setVisibility(View.VISIBLE);
             }
@@ -667,7 +756,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private Animator createLatLngAnimator(LatLng currentPosition, LatLng targetPosition) {
         ValueAnimator latLngAnimator = ValueAnimator.ofObject(new LatLngEvaluator(), currentPosition, targetPosition);
-        latLngAnimator.setDuration(1950);
+        latLngAnimator.setDuration(1000);
         latLngAnimator.setInterpolator(new FastOutSlowInInterpolator());
         latLngAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
@@ -680,7 +769,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private Animator createZoomAnimator(double currentZoom, double targetZoom) {
         ValueAnimator zoomAnimator = ValueAnimator.ofFloat((float) currentZoom, (float) targetZoom);
-        zoomAnimator.setDuration(1950);
+        zoomAnimator.setDuration(1000);
         zoomAnimator.setInterpolator(new FastOutSlowInInterpolator());
         zoomAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
