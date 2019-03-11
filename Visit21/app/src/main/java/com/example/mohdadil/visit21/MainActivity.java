@@ -22,8 +22,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -91,6 +93,7 @@ import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.fillExtrusionHei
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.fillExtrusionOpacity;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.fillOpacity;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAllowOverlap;
+import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAnchor;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconImage;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconSize;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconTextFit;
@@ -107,6 +110,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private MapboxMap mapboxMap;
     private PermissionsManager permissionsManager;
     private  Boolean check=false;
+    private ArrayList<String> mPoiList= new ArrayList<String>() ;
+    private ArrayAdapter<String> adapter;
 
 
     private Location ialastLocation;
@@ -135,6 +140,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private int mFloor;
     private IAWayfindingRequest mWayfindingDestination;
+
 
     private IAWayfindingListener mWayfindingListener = new IAWayfindingListener() {
         @Override
@@ -273,6 +279,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         mIALocationManager.requestLocationUpdates(IALocationRequest.create(), mListener);
         mIALocationManager.registerRegionListener(mRegionListener);
+
+        ListView listView = findViewById(R.id.listView);
+        adapter=new ArrayAdapter<String>(this, android.R.layout.simple_expandable_list_item_1,mPoiList);
+        listView.setAdapter(adapter);
+
     }
 
     @Override
@@ -317,6 +328,16 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                             "indoor-building", loadJsonFromAsset("fourth.geojson"));
                     style.addSource(indoorBuildingSource);
                     featureCollection = FeatureCollection.fromJson(loadJsonFromAsset("fourth.geojson"));
+                    List<Feature> featureList = featureCollection.features();
+                    if(!mPoiList.isEmpty()){
+                        mPoiList.clear();
+                    }
+                    for (int i = 0; i < featureList.size(); i++) {
+                        if(featureList.get(i).hasProperty("name")){
+                            mPoiList.add(featureList.get(i).getStringProperty("name"));
+                        }
+                    }
+                    adapter.notifyDataSetChanged();
                     setupLayer();
                     currButton = buttonfourthLevel;
                     ActivateButton(currButton);
@@ -337,6 +358,16 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             public void onClick(View view) {
                 indoorBuildingSource.setGeoJson(loadJsonFromAsset("fifth.geojson"));
                 featureCollection = FeatureCollection.fromJson(loadJsonFromAsset("fifth.geojson"));
+                List<Feature> featureList = featureCollection.features();
+                if(!mPoiList.isEmpty()){
+                    mPoiList.clear();
+                }
+                for (int i = 0; i < featureList.size(); i++) {
+                    if(featureList.get(i).hasProperty("name")){
+                        mPoiList.add(featureList.get(i).getStringProperty("name"));
+                    }
+                }
+                adapter.notifyDataSetChanged();
                 setupLayer();
                     DeactiveButton(currButton);
                     currButton=buttonFifthLevel;
@@ -350,6 +381,16 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             public void onClick(View view) {
                 indoorBuildingSource.setGeoJson(loadJsonFromAsset("fourth.geojson"));
                 featureCollection = FeatureCollection.fromJson(loadJsonFromAsset("fourth.geojson"));
+                List<Feature> featureList = featureCollection.features();
+                if(!mPoiList.isEmpty()){
+                    mPoiList.clear();
+                }
+                for (int i = 0; i < featureList.size(); i++) {
+                    if(featureList.get(i).hasProperty("name")){
+                        mPoiList.add(featureList.get(i).getStringProperty("name"));
+                    }
+                }
+                adapter.notifyDataSetChanged();
                 setupLayer();
                     DeactiveButton(currButton);
                     currButton=buttonfourthLevel;
@@ -375,8 +416,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mStyle.addLayer(new SymbolLayer("poi-layer","indoor-building").withProperties(
                     iconImage("{poi}-15"),
                     iconAllowOverlap(true),
-                    iconSize(1f),
-                    iconTextFit(Expression.get("name"))
+                    iconSize(match(Expression.toString(get("selected")), literal(1.0f),stop("true",1.5f)))
                 )
         );
 

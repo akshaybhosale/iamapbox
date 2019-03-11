@@ -35,6 +35,7 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation 'com.squareup.picasso:picasso:2.5.2'
     implementation 'com.squareup.picasso:picasso:2.71828'
+    implementation 'com.sothree.slidinguppanel:library:3.4.0'
 
     //indooratlas
     implementation 'com.indooratlas.android:indooratlas-android-sdk:2.9.0@aar'
@@ -46,6 +47,7 @@ dependencies {
     implementation 'com.mapbox.mapboxsdk:mapbox-android-core:1.1.0'
     implementation 'com.mapbox.mapboxsdk:mapbox-sdk-geojson:4.3.0'
     implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-annotation-v7:0.5.0'
+
 
 
 }
