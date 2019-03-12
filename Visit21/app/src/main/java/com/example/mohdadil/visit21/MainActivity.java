@@ -22,6 +22,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -29,6 +30,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.indooratlas.android.sdk.IALocation;
 import com.indooratlas.android.sdk.IALocationListener;
 import com.indooratlas.android.sdk.IALocationManager;
@@ -44,6 +47,7 @@ import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
+import com.mapbox.geojson.GeoJson;
 import com.mapbox.geojson.Point;
 import com.mapbox.geojson.Polygon;
 import com.mapbox.mapboxsdk.Mapbox;
@@ -72,6 +76,9 @@ import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 import com.mapbox.turf.TurfJoins;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -84,6 +91,7 @@ import static com.mapbox.mapboxsdk.style.expressions.Expression.interpolate;
 import static com.mapbox.mapboxsdk.style.expressions.Expression.literal;
 import static com.mapbox.mapboxsdk.style.expressions.Expression.match;
 import static com.mapbox.mapboxsdk.style.expressions.Expression.stop;
+import static com.mapbox.mapboxsdk.style.expressions.Expression.typeOf;
 import static com.mapbox.mapboxsdk.style.expressions.Expression.zoom;
 import static com.mapbox.mapboxsdk.style.layers.Property.NONE;
 import static com.mapbox.mapboxsdk.style.layers.Property.VISIBLE;
@@ -103,7 +111,7 @@ import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineWidth;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.visibility;
 //import com.mapbox.android.core.location.LocationEngineListener;
 
-public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, PermissionsListener, MapboxMap.OnMapClickListener {
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, PermissionsListener, MapboxMap.OnMapClickListener , AdapterView.OnItemClickListener {
 
     private LocationLayerPlugin locationLayerPlugin;
     private MapView mapView;
@@ -251,11 +259,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 RegionId=iaRegion.getVenue().getId();
             }
 
-           FloorPlan=iaRegion.getFloorPlan();
-           if(FloorPlan!=null){
-               FloorPlanId=FloorPlan.getId();
-               Log.d("floor id : ",FloorPlanId);
-           }
+            FloorPlan=iaRegion.getFloorPlan();
+            if(FloorPlan!=null){
+                FloorPlanId=FloorPlan.getId();
+                Log.d("floor id : ",FloorPlanId);
+            }
         }
 
         @Override
@@ -283,7 +291,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         ListView listView = findViewById(R.id.listView);
         adapter=new ArrayAdapter<String>(this, android.R.layout.simple_expandable_list_item_1,mPoiList);
         listView.setAdapter(adapter);
+        listView.setOnItemClickListener(this);
 
+    }
+
+    public void onItemClick(AdapterView<?> l, View v, int position, long id){
+
+        setSelected(position);
     }
 
     @Override
@@ -334,7 +348,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     }
                     for (int i = 0; i < featureList.size(); i++) {
                         if(featureList.get(i).hasProperty("name")){
-                            mPoiList.add(featureList.get(i).getStringProperty("name"));
+                            mPoiList.add(featureList.get(i).getStringProperty("name")+" : "+featureList.get(i).getStringProperty("description"));
                         }
                     }
                     adapter.notifyDataSetChanged();
@@ -369,9 +383,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
                 adapter.notifyDataSetChanged();
                 setupLayer();
-                    DeactiveButton(currButton);
-                    currButton=buttonFifthLevel;
-                    ActivateButton(currButton);
+                DeactiveButton(currButton);
+                currButton=buttonFifthLevel;
+                ActivateButton(currButton);
             }
         });
 
@@ -392,20 +406,20 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
                 adapter.notifyDataSetChanged();
                 setupLayer();
-                    DeactiveButton(currButton);
-                    currButton=buttonfourthLevel;
-                    ActivateButton(currButton);
+                DeactiveButton(currButton);
+                currButton=buttonfourthLevel;
+                ActivateButton(currButton);
             }
         });
     }
     private void removeLayermine(){
-            Layer extrusionlayer=mapboxMap.getStyle().getLayer("extrusion-layer");
-            Layer poilayer=mapboxMap.getStyle().getLayer("poi-layer");
-            if(extrusionlayer!=null && poilayer!=null)
-            {
-                mStyle.removeLayer(extrusionlayer);
-                mStyle.removeLayer(poilayer);
-            }
+        Layer extrusionlayer=mapboxMap.getStyle().getLayer("extrusion-layer");
+        Layer poilayer=mapboxMap.getStyle().getLayer("poi-layer");
+        if(extrusionlayer!=null && poilayer!=null)
+        {
+            mStyle.removeLayer(extrusionlayer);
+            mStyle.removeLayer(poilayer);
+        }
     }
     public void setupLayer(){
         removeLayermine();
@@ -414,9 +428,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 fillExtrusionOpacity(0.7f),
                 fillExtrusionHeight((float)3)));
         mStyle.addLayer(new SymbolLayer("poi-layer","indoor-building").withProperties(
-                    iconImage("{poi}-15"),
-                    iconAllowOverlap(true),
-                    iconSize(match(Expression.toString(get("selected")), literal(1.0f),stop("true",1.5f)))
+                iconImage("{poi}-15"),
+                iconAllowOverlap(true),
+                iconSize(match(Expression.toString(get("selected")), literal(1.0f),stop("true",1.5f)))
                 )
         );
 
@@ -716,12 +730,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         final PointF pixel = mapboxMap.getProjection().toScreenLocation(point);
         List<Feature> features = mapboxMap.queryRenderedFeatures(pixel, "poi-layer");
         if(!features.isEmpty()){
-            String name = features.get(0).getStringProperty("name");
+            String id = features.get(0).id();
             List<Feature> featureList = featureCollection.features();
             for (int i = 0; i < featureList.size(); i++) {
                 if(featureList.get(i).hasProperty("name")){
-                    if (featureList.get(i).getStringProperty("name").equals(name)) {
-                        setSelected(i, true);
+                    if (featureList.get(i).id().equals(id)) {
+                        setSelected(i);
                     }
                 }
             }
@@ -732,7 +746,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     // ........................................................................................................................................
 
-    private void setSelected(int index, boolean flag){
+    private void setSelected(int index){
         deselectAll();
         Feature feature = featureCollection.features().get(index);
         selectFeature(feature);
@@ -838,4 +852,3 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 }
-
