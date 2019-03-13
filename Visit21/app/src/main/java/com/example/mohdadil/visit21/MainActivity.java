@@ -75,6 +75,9 @@ import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 import com.mapbox.turf.TurfJoins;
+import com.michaelmuenzer.android.scrollablennumberpicker.ScrollableNumberPicker;
+import com.michaelmuenzer.android.scrollablennumberpicker.ScrollableNumberPickerListener;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -118,6 +121,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private MapboxMap mapboxMap;
     private PermissionsManager permissionsManager;
     private  Boolean check=false;
+    Button btnShow;
+    ScrollableNumberPicker scrollableNumberPickerA;
     private ArrayList<String> mPoiList= new ArrayList<String>() ;
     private ArrayAdapter<String> adapter;
 
@@ -131,17 +136,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private IALocationManager mIALocationManager;
     private GeoJsonSource indoorBuildingSource;
     private List<List<Point>> boundingBoxList;
-    private View levelButtons;
     private Button currButton;
     private Button navi1;
-    private Button buttonFifthLevel;
-    private Button buttonfourthLevel;
     private FeatureCollection featureCollection;
     private AnimatorSet animatorSet;
     private TextView nameTextView;
     private  TextView descriptionTextView;
     private LinearLayout poiCard;
     private boolean cardVisible = false;
+    private SlidingUpPanelLayout mSlidingPanel;
 
     private List<Polyline> mPolylines = new ArrayList<>();
     private IARoute mCurrentRoute;
@@ -280,6 +283,85 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         setContentView(R.layout.activity_main);
         findViewById(android.R.id.content).setKeepScreenOn(true);
 
+        scrollableNumberPickerA=(ScrollableNumberPicker)findViewById(R.id.up_down);
+        mSlidingPanel = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
+        scrollableNumberPickerA.setListener(new ScrollableNumberPickerListener() {
+            @Override
+            public void onNumberPicked(int value) {
+                // Do some magic
+                //Toast.makeText(MainActivity.this,String.format("%d",scrollableNumberPickerA.getValue()) ,Toast.LENGTH_SHORT).show();
+                int n=scrollableNumberPickerA.getValue();
+
+                if(n==2)
+                {
+                    indoorBuildingSource.setGeoJson(loadJsonFromAsset("second.geojson"));
+                    featureCollection = FeatureCollection.fromJson(loadJsonFromAsset("second.geojson"));
+                    List<Feature> featureList = featureCollection.features();
+                    if(!mPoiList.isEmpty()){
+                        mPoiList.clear();
+                    }
+                    for (int i = 0; i < featureList.size(); i++) {
+                        if(featureList.get(i).hasProperty("name")){
+                            mPoiList.add(featureList.get(i).getStringProperty("name")+" : "+featureList.get(i).getStringProperty("description"));
+                        }
+                    }
+                    adapter.notifyDataSetChanged();
+                    setupLayer();
+                }
+                if(n==3)
+                {
+                    indoorBuildingSource.setGeoJson(loadJsonFromAsset("third.geojson"));
+                    featureCollection = FeatureCollection.fromJson(loadJsonFromAsset("third.geojson"));
+                    List<Feature> featureList = featureCollection.features();
+                    if(!mPoiList.isEmpty()){
+                        mPoiList.clear();
+                    }
+                    for (int i = 0; i < featureList.size(); i++) {
+                        if(featureList.get(i).hasProperty("name")){
+                            mPoiList.add(featureList.get(i).getStringProperty("name")+" : "+featureList.get(i).getStringProperty("description"));
+                        }
+                    }
+                    adapter.notifyDataSetChanged();
+                    setupLayer();
+                }
+                if(n==4)
+                {
+                    indoorBuildingSource.setGeoJson(loadJsonFromAsset("fourth.geojson"));
+                    featureCollection = FeatureCollection.fromJson(loadJsonFromAsset("fourth.geojson"));
+                    List<Feature> featureList = featureCollection.features();
+                    if(!mPoiList.isEmpty()){
+                        mPoiList.clear();
+                    }
+                    for (int i = 0; i < featureList.size(); i++) {
+                        if(featureList.get(i).hasProperty("name")){
+                            mPoiList.add(featureList.get(i).getStringProperty("name")+" : "+featureList.get(i).getStringProperty("description"));
+                        }
+                    }
+                    adapter.notifyDataSetChanged();
+                    setupLayer();
+                }
+
+                if(n==5)
+                {
+
+                    indoorBuildingSource.setGeoJson(loadJsonFromAsset("fifth.geojson"));
+                    featureCollection = FeatureCollection.fromJson(loadJsonFromAsset("fifth.geojson"));
+                    List<Feature> featureList = featureCollection.features();
+                    if(!mPoiList.isEmpty()){
+                        mPoiList.clear();
+                    }
+                    for (int i = 0; i < featureList.size(); i++) {
+                        if(featureList.get(i).hasProperty("name")){
+                            mPoiList.add(featureList.get(i).getStringProperty("name")+" : "+featureList.get(i).getStringProperty("description"));
+                        }
+                    }
+                    adapter.notifyDataSetChanged();
+                    setupLayer();
+                }
+            }
+        });
+
+
         mIALocationManager = IALocationManager.create(this);
         mapView=findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
@@ -298,6 +380,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onItemClick(AdapterView<?> l, View v, int position, long id){
 
         setSelected(position);
+        if (mSlidingPanel.getPanelState() != SlidingUpPanelLayout.PanelState.COLLAPSED)
+        {
+            mSlidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+        }
     }
 
     @Override
@@ -307,7 +393,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mapboxMap.setStyle(new Style.Builder().fromUrl("mapbox://styles/adil-khot/cjrs2yradf2g42tocp5czguq5"),
                 style -> {
                     mStyle=style;
-                    levelButtons = findViewById(R.id.floor_level_buttons);
                     final List<Point> boundingBox = new ArrayList<>();
 
                     boundingBox.add(Point.fromLngLat(72.9914219677448, 19.0762151432401));
@@ -328,11 +413,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         if (mapboxMap.getCameraPosition().zoom > 18) {
                             if (TurfJoins.inside(Point.fromLngLat(mapboxMap.getCameraPosition().target.getLongitude(),
                                     mapboxMap.getCameraPosition().target.getLatitude()), Polygon.fromLngLats(boundingBoxList))) {
-                                if (levelButtons.getVisibility() != View.VISIBLE) {
+                                if (scrollableNumberPickerA.getVisibility() != View.VISIBLE) {
                                     showLevelButton();
                                 }
                             }
-                        } else if (levelButtons.getVisibility() == View.VISIBLE) {
+                        } else if (scrollableNumberPickerA.getVisibility() == View.VISIBLE) {
                             hideLevelButton();
                         }
                     });
@@ -353,8 +438,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     }
                     adapter.notifyDataSetChanged();
                     setupLayer();
-                    currButton = buttonfourthLevel;
-                    ActivateButton(currButton);
 
                     // Add the building layers since we know zoom levels in range
                     //loadBuildingLayer(style);
@@ -362,55 +445,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     mapboxMap.addOnMapClickListener(this);
                 });
 
-
-
-
-
-        buttonFifthLevel = findViewById(R.id.fifth_level_button);
-        buttonFifthLevel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                indoorBuildingSource.setGeoJson(loadJsonFromAsset("fifth.geojson"));
-                featureCollection = FeatureCollection.fromJson(loadJsonFromAsset("fifth.geojson"));
-                List<Feature> featureList = featureCollection.features();
-                if(!mPoiList.isEmpty()){
-                    mPoiList.clear();
-                }
-                for (int i = 0; i < featureList.size(); i++) {
-                    if(featureList.get(i).hasProperty("name")){
-                        mPoiList.add(featureList.get(i).getStringProperty("name"));
-                    }
-                }
-                adapter.notifyDataSetChanged();
-                setupLayer();
-                DeactiveButton(currButton);
-                currButton=buttonFifthLevel;
-                ActivateButton(currButton);
-            }
-        });
-
-        buttonfourthLevel = findViewById(R.id.fourth_level_button);
-        buttonfourthLevel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                indoorBuildingSource.setGeoJson(loadJsonFromAsset("fourth.geojson"));
-                featureCollection = FeatureCollection.fromJson(loadJsonFromAsset("fourth.geojson"));
-                List<Feature> featureList = featureCollection.features();
-                if(!mPoiList.isEmpty()){
-                    mPoiList.clear();
-                }
-                for (int i = 0; i < featureList.size(); i++) {
-                    if(featureList.get(i).hasProperty("name")){
-                        mPoiList.add(featureList.get(i).getStringProperty("name"));
-                    }
-                }
-                adapter.notifyDataSetChanged();
-                setupLayer();
-                DeactiveButton(currButton);
-                currButton=buttonfourthLevel;
-                ActivateButton(currButton);
-            }
-        });
     }
     private void removeLayermine(){
         Layer extrusionlayer=mapboxMap.getStyle().getLayer("extrusion-layer");
@@ -436,15 +470,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     }
 
-    private void ActivateButton(Button b){
-        b.setTextColor(Color.BLUE);
-        b.setBackgroundColor(Color.WHITE);
-    }
-
-    private void DeactiveButton(Button b){
-        b.setTextColor(Color.WHITE);
-        b.setBackgroundColor(Color.BLUE);
-    }
 
 
     @SuppressWarnings( {"MissingPermission"})
@@ -562,8 +587,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         // buttons are faded out and hidden.
         AlphaAnimation animation = new AlphaAnimation(1.0f, 0.0f);
         animation.setDuration(500);
-        levelButtons.startAnimation(animation);
-        levelButtons.setVisibility(View.GONE);
+        scrollableNumberPickerA.startAnimation(animation);
+        scrollableNumberPickerA.setVisibility(View.GONE);
     }
 
     private void showLevelButton() {
@@ -571,8 +596,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         // the floor level buttons are faded out and hidden.
         AlphaAnimation animation = new AlphaAnimation(0.0f, 1.0f);
         animation.setDuration(500);
-        levelButtons.startAnimation(animation);
-        levelButtons.setVisibility(View.VISIBLE);
+        scrollableNumberPickerA.startAnimation(animation);
+        scrollableNumberPickerA.setVisibility(View.VISIBLE);
     }
 
 //    private void loadBuildingLayer(@NonNull Style style) {

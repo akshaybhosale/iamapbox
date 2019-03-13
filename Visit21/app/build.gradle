@@ -47,6 +47,7 @@ dependencies {
     implementation 'com.mapbox.mapboxsdk:mapbox-android-core:1.1.0'
     implementation 'com.mapbox.mapboxsdk:mapbox-sdk-geojson:4.3.0'
     implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-annotation-v7:0.5.0'
+    implementation 'com.michaelmuenzer.android:ScrollableNumberPicker:0.2.2'
 
 
 

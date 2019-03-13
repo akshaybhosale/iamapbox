@@ -2,6 +2,7 @@
 <com.sothree.slidinguppanel.SlidingUpPanelLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:mapbox="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/sliding_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity"
@@ -24,32 +25,29 @@
             />
 
         <LinearLayout
-            android:id="@+id/floor_level_buttons"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:background="@color/mapboxBlue"
             android:orientation="vertical"
             android:layout_alignParentRight="true">
 
-            <Button
-                android:id="@+id/fifth_level_button"
-                android:layout_width="50dp"
+            <com.michaelmuenzer.android.scrollablennumberpicker.ScrollableNumberPicker
+                android:id="@+id/up_down"
+                android:layout_width="60dp"
                 android:layout_height="wrap_content"
-                android:background="?android:attr/selectableItemBackground"
-                android:text="5"
-                android:textColor="@color/mapboxWhite" />
-
-            <Button
-                android:id="@+id/fourth_level_button"
-                android:layout_width="50dp"
-                android:layout_height="wrap_content"
-                android:background="?android:attr/selectableItemBackground"
-                android:text="4"
-                android:textColor="@color/mapboxWhite" />
-
-
+                android:layout_margin="10dp"
+                android:background="@drawable/number_picker_bg"
+                mapbox:snp_buttonIconDown="@drawable/ic_down"
+                mapbox:snp_buttonIconUp="@drawable/ic_up"
+                mapbox:snp_maxValue="5"
+                mapbox:snp_minValue="2"
+                mapbox:snp_orientation="vertical"
+                mapbox:snp_stepSize="1"
+                mapbox:snp_value="4"
+                mapbox:snp_valueMarginEnd="8dp"
+                mapbox:snp_valueMarginStart="8dp" />
         </LinearLayout>
+
 
         <LinearLayout
             android:layout_width="match_parent"

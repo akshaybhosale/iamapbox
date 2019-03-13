@@ -3,8 +3,8 @@
   	{
       "type": "Feature",
       "properties": {
-        "name": "AX-503 B",
-        "description": "GENTS WASHROOM STAFF",
+        "name": "Staff Toilet",
+        "description": "Gents Staff Toilet",
         "poi": "toilet",
         "selected": "false"
       },
@@ -20,8 +20,8 @@
     {
       "type": "Feature",
       "properties": {
-        "name": "AX-513 B",
-        "description": "LADIES WASHROOM STAFF",
+        "name": "Staff Toilet",
+        "description": "Ladies Staff Toilet",
         "poi": "toilet",
         "selected": "false"
       },
@@ -37,8 +37,8 @@
     {
       "type": "Feature",
       "properties": {
-        "name": "AX-504",
-        "description": "PG LAB COMPUTER",
+        "name": "ELECT-LAB-10",
+        "description": "ELECT-LAB-10",
         "poi": "hardware",
         "selected": "false"
       },
@@ -54,8 +54,8 @@
     {
       "type": "Feature",
       "properties": {
-        "name": "LIFT",
-        "description": "5TH FLOOR LIFT",
+        "name": "Elevator",
+        "description": "Elevator Girls",
         "poi": "landmark",
         "selected": "false"
       },
@@ -71,8 +71,8 @@
     {
       "type": "Feature",
       "properties": {
-        "name": "AX-506",
-        "description": "SYSTEM LAB",
+        "name": "LAB-510",
+        "description": "EXTC LAB 10",
         "poi": "hardware",
         "selected": "false"
       },
@@ -88,8 +88,8 @@
     {
       "type": "Feature",
       "properties": {
-        "name": "AX-503 A",
-        "description": "GENTS WASHROOM STUDENTS",
+        "name": "Rest Room",
+        "description": "Boys Wash Room",
         "poi": "toilet",
         "selected": "false"
       },
@@ -105,8 +105,8 @@
     {
       "type": "Feature",
       "properties": {
-        "name": "AX-513 A",
-        "description": "LADIES WASHROOM STUDENTS",
+        "name": "Rest Room",
+        "description": "Girls Wash Room",
         "poi": "toilet",
         "selected": "false"
       },
@@ -122,8 +122,8 @@
     {
       "type": "Feature",
       "properties": {
-        "name": "WATER FILTER",
-        "description": "LADIES WATER FILTER",
+        "name": "Water Filter",
+        "description": "Girls Water Filter",
         "poi": "drinking-water",
         "selected": "false"
       },
@@ -139,8 +139,8 @@
     {
       "type": "Feature",
       "properties": {
-        "name": "AX-510",
-        "description": "OPEN SOURCE LAB 1",
+        "name": "LAB-508",
+        "description": "EXTC LAB 08",
         "poi": "hardware",
         "selected": "false"
       },
@@ -156,8 +156,8 @@
     {
       "type": "Feature",
       "properties": {
-        "name": "WATER FILTER",
-        "description": "GENTS WATER FILTER",
+        "name": "Water Filter",
+        "description": "Gents Water Filter",
         "poi": "drinking-water",
         "selected": "false"
       },
@@ -173,8 +173,8 @@
     {
       "type": "Feature",
       "properties": {
-        "name": "AX-509",
-        "description": "R & D ELECTRICAL",
+        "name": "LAB-506",
+        "description": "IT LAB 06",
         "poi": "hardware",
         "selected": "false"
       },
@@ -188,44 +188,10 @@
       "id": "8afbaff2fe2f72eb1798d52dd3528793"
     },
     {
-          "type": "Feature",
-          "properties": {
-            "name": "STAIRS",
-            "description": "5TH FLOOR STAIRS",
-            "poi": "pitch",
-            "selected": false
-          },
-          "geometry": {
-            "coordinates": [
-              72.991896,
-              19.075929
-            ],
-            "type": "Point"
-          },
-          "id": "b95281748d1cf5ba856b2e5f71107fdf"
-        },
-    {
-          "type": "Feature",
-          "properties": {
-            "name": "STAIRS",
-            "description": "5TH FLOOR STAIRS",
-            "poi": "pitch",
-            "selected": false
-          },
-          "geometry": {
-            "coordinates": [
-              72.991569,
-              19.075951
-            ],
-            "type": "Point"
-          },
-          "id": "7376b8b32ea51b4f04cbfdb83c31839a"
-        },
-    {
       "type": "Feature",
       "properties": {
-        "name": "AX-516",
-        "description": "PG LAB MECHANICAL",
+        "name": "LAB-502",
+        "description": "IT LAB 02",
         "poi": "hardware",
         "selected": "false"
       },
@@ -241,8 +207,8 @@
     {
       "type": "Feature",
       "properties": {
-        "name": "AX-501",
-        "description": "ME EXTC TUTORIAL ROOM",
+        "name": "EXTC ME Tutorial Room",
+        "description": "Tutorial Room",
         "poi": "hardware",
         "selected": "false"
       },
@@ -258,8 +224,8 @@
     {
       "type": "Feature",
       "properties": {
-        "name": "AX-507",
-        "description": "R & D COMPUTER",
+        "name": "LAB-507",
+        "description": "IT LAB 07",
         "poi": "hardware",
         "selected": "false"
       },
@@ -275,8 +241,8 @@
     {
       "type": "Feature",
       "properties": {
-        "name": "AX-508",
-        "description": "OPEN SOURCE LAB 2",
+        "name": "LAB-509",
+        "description": "EXTC LAB 09",
         "poi": "hardware",
         "selected": "false"
       },
@@ -292,8 +258,8 @@
     {
       "type": "Feature",
       "properties": {
-        "name": "AX-515",
-        "description": "ME MECHANICAL TUTORIAL ROOM",
+        "name": "LAB-501",
+        "description": "IT LAB 01",
         "poi": "hardware",
         "selected": "false"
       },
@@ -309,8 +275,8 @@
     {
       "type": "Feature",
       "properties": {
-        "name": "AX-505 A",
-        "description": "HOD CABIN",
+        "name": "IT-LAB-09",
+        "description": "IT-LAB-09",
         "poi": "hardware",
         "selected": "false"
       },
@@ -326,8 +292,8 @@
     {
       "type": "Feature",
       "properties": {
-        "name": "AX-514",
-        "description": "ME ELECTRICAL TUTORIAL ROOM",
+        "name": "LAB-503",
+        "description": "IT LAB 03",
         "poi": "hardware",
         "selected": "false"
       },
@@ -343,8 +309,8 @@
     {
       "type": "Feature",
       "properties": {
-        "name": "AX-512",
-        "description": "PG LAB ELECTRICAL",
+        "name": "LAB-504",
+        "description": "IT LAB 04",
         "poi": "hardware",
         "selected": "false"
       },
@@ -360,8 +326,8 @@
     {
       "type": "Feature",
       "properties": {
-        "name": "AX-505 B",
-        "description": "ME COMPUTER TUTORIAL ROOM",
+        "name": "EXTC Me Tutorial Room",
+        "description": "Tutorial Room",
         "poi": "hardware",
         "selected": "false"
       },
@@ -377,8 +343,8 @@
     {
       "type": "Feature",
       "properties": {
-        "name": "AX-511",
-        "description": "R & D MECHANICAL ",
+        "name": "LAB-505",
+        "description": "IT LAB 05",
         "poi": "hardware",
         "selected": "false"
       },
@@ -394,8 +360,8 @@
     {
       "type": "Feature",
       "properties": {
-        "name": "LIFT",
-        "description": "5TH FLOOR LIFT",
+        "name": "Elevator",
+        "description": "Elevator Boys",
         "poi": "landmark",
         "selected": "false"
       },
@@ -411,8 +377,8 @@
     {
       "type": "Feature",
       "properties": {
-        "name": "AX-502",
-        "description": "PG EXTC LAB",
+        "name": "IT-LAB-08",
+        "description": "IT-LAB-08",
         "poi": "hardware",
         "selected": "false"
       },
