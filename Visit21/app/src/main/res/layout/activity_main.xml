@@ -48,6 +48,17 @@
                 mapbox:snp_valueMarginStart="8dp" />
         </LinearLayout>
 
+        <ImageView
+            android:id="@+id/side"
+            android:layout_width="30dp"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:background="?android:attr/selectableItemBackground"
+            android:src="@mipmap/ic_side"
+            android:text="5"
+            android:textColor="@color/mapboxWhite" />
+
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -74,6 +85,52 @@
                 android:text="sample des"
                 android:textSize="70px"
                 />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="200px"
+                android:orientation="horizontal">
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/distance"
+                    android:layout_marginLeft="20px"
+                    android:textColor="@color/mapboxBlue"
+                    android:text="distance:"
+                    android:textSize="60px"
+                    android:textStyle="bold"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/time"
+                    android:textColor="@color/colorAccent"
+
+                    android:layout_marginLeft="30px"
+                    android:text="ETA:"
+                    android:textSize="60px"
+                    android:textStyle="bold"
+                    />
+
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15px"
+
+
+                    android:id="@+id/arrow"
+                    android:src="@mipmap/ic_arrow"
+
+                    android:text="head"
+                    android:textSize="60px"
+                    android:textStyle="bold"
+                    />
+
+            </LinearLayout>
+
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -107,7 +164,7 @@
                 android:textAlignment="center"
                 android:textSize="70px"
                 android:layout_weight="1"
-                android:id="@+id/arrow"
+                android:id="@+id/arrow1"
                 android:textStyle="bold"
                 android:text="^"/>
 

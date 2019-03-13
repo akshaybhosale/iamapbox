@@ -6,8 +6,10 @@ import android.animation.AnimatorSet;
 import android.animation.TypeEvaluator;
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.PointF;
 import android.location.Location;
 import android.location.LocationListener;
@@ -25,6 +27,7 @@ import android.view.animation.AlphaAnimation;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -75,6 +78,7 @@ import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 import com.mapbox.turf.TurfJoins;
+import com.mapbox.turf.TurfMeasurement;
 import com.michaelmuenzer.android.scrollablennumberpicker.ScrollableNumberPicker;
 import com.michaelmuenzer.android.scrollablennumberpicker.ScrollableNumberPickerListener;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
@@ -140,11 +144,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private Button navi1;
     private FeatureCollection featureCollection;
     private AnimatorSet animatorSet;
+    private double routeLength = 0;
     private TextView nameTextView;
     private  TextView descriptionTextView;
     private LinearLayout poiCard;
     private boolean cardVisible = false;
     private SlidingUpPanelLayout mSlidingPanel;
+    private TextView distview;
+    private double dirLat;
+    private double dirLong;
+    private ArrayList<String> chatList = new ArrayList<String>();
+
 
     private List<Polyline> mPolylines = new ArrayList<>();
     private IARoute mCurrentRoute;
@@ -443,9 +453,36 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     //loadBuildingLayer(style);
                     enableLocationComponent(mStyle);
                     mapboxMap.addOnMapClickListener(this);
+
+                    Intent mainIntent = getIntent();
+                    int pos = mainIntent.getIntExtra("pos",0);
+                    setSelected(pos);
                 });
 
+        ImageView side = findViewById(R.id.side);
+        side.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this,chat.class);
+                List<Feature> featureListChat=featureCollection.features();
+                if(!chatList.isEmpty()){
+                    chatList.clear();
+                }
+                if(!featureListChat.isEmpty()){
+                    for(int i = 0; i< featureListChat.size(); i++){
+                        if(featureListChat.get(i).hasProperty("name")){
+                            chatList.add(featureListChat.get(i).getStringProperty("name")+" : "+ featureListChat.get(i).getStringProperty("name"));
+                        }
+                    }
+
+                }
+                intent.putExtra("list",chatList);
+                startActivity(intent);
+            }
+        });
+
     }
+
     private void removeLayermine(){
         Layer extrusionlayer=mapboxMap.getStyle().getLayer("extrusion-layer");
         Layer poilayer=mapboxMap.getStyle().getLayer("poi-layer");
@@ -643,16 +680,63 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private boolean hasArrivedToDestination(IARoute route) {
+        try {
+            Point point1 = Point.fromLngLat(dirLat, dirLong);
+            Point point2 = Point.fromLngLat(ialastLocation.getLatitude(), ialastLocation.getLongitude());
+            Log.d("point1", point1.toString());
+            Log.d("point2", point2.toString());
+            double bearing = TurfMeasurement.bearing(point1,point2);
+            rotateArrow(bearing);
+
+        }
+        catch (Exception e)
+        {
+
+        }
+
+
+        //double point2 = dirLong;
+
+
         // empty routes are only returned when there is a problem, for example,
         // missing or disconnected routing graph
         if (route.getLegs().size() == 0) {
             return false;
         }
+        // TextView headtxt = (TextView)findViewById(R.id.head) ;
+        distview=(TextView)findViewById(R.id.distance);
+        TextView  timeview=(TextView)findViewById(R.id.time);
+        //  headtxt.setText("direction : "+ bearing );
 
         final double FINISH_THRESHOLD_METERS = 8.0;
-        double routeLength = 0;
+        routeLength=0;
+
         for (IARoute.Leg leg : route.getLegs()) routeLength += leg.getLength();
+        Log.d("distance",Double.toString(routeLength));
+//        Toast toast = Toast.makeText(getApplicationContext(),
+//                Double.toString(routeLength) ,
+//                Toast.LENGTH_SHORT);
+
+        // toast.show();
+
+        String strDouble = String.format("%.2f", routeLength);
+
+        double time = routeLength/1.4;
+        time=time/60;
+        String strtime = String.format("%.2f", time);
+
+        distview.setText("Distance: "+ strDouble+"m");
+        timeview.setText("ETA: "+ strtime+"min");
+
         return routeLength < FINISH_THRESHOLD_METERS;
+    }
+
+    private void rotateArrow(double angle){
+        ImageView img = (ImageView)findViewById(R.id.arrow) ;
+        Matrix matrix = new Matrix();
+        img.setScaleType(ImageView.ScaleType.MATRIX);
+        matrix.postRotate((float) angle, 100f, 100f);
+        img.setImageMatrix(matrix);
     }
 
     /**
@@ -668,6 +752,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     /**
      * Visualize the IndoorAtlas Wayfinding route on top of the Google Maps.
      */
+
     private void updateRouteVisualization() {
 
         clearRouteVisualization();
@@ -675,7 +760,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (mCurrentRoute == null) {
             return;
         }
-
+        int count=0;
         for (IARoute.Leg leg : mCurrentRoute.getLegs()) {
 
             if (leg.getEdgeIndex() == null) {
@@ -687,10 +772,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 // of the route. Alternatively, they could be visualized with dashed lines.
                 continue;
             }
-
+            count++;
             PolylineOptions opt = new PolylineOptions();
             opt.add(new LatLng(leg.getBegin().getLatitude(), leg.getBegin().getLongitude()));
             opt.add(new LatLng(leg.getEnd().getLatitude(), leg.getEnd().getLongitude()));
+            if(count==1)
+            {
+                dirLat=leg.getEnd().getLatitude();
+                dirLong=leg.getEnd().getLongitude();
+            }
 
             // Here wayfinding path in different floor than current location is visualized in
             // a semi-transparent color
