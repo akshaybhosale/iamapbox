@@ -129,6 +129,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     ScrollableNumberPicker scrollableNumberPickerA;
     private ArrayList<String> mPoiList= new ArrayList<String>() ;
     private ArrayAdapter<String> adapter;
+    private double naviLat;
+    private double naviLng;
 
 
     private Location ialastLocation;
@@ -292,6 +294,41 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         Mapbox.getInstance(this,getString(R.string.access_token));
         setContentView(R.layout.activity_main);
         findViewById(android.R.id.content).setKeepScreenOn(true);
+
+        navi1 = findViewById(R.id.poinavigatebutton);
+        navi1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // indoorBuildingSource.setGeoJson(loadJsonFromAsset("fifth.geojson"));
+                if(check) {
+
+                    navi1.setText("start navigation");
+                    mCurrentRoute = null;
+                    mWayfindingDestination = null;
+                    mIALocationManager.removeWayfindingUpdates();
+                    updateRouteVisualization();
+                    check = false;
+
+                }
+                else
+                {
+                    check = true;
+
+
+                    mWayfindingDestination = new IAWayfindingRequest.Builder()
+                            .withFloor(4)
+                            .withLatitude(naviLat)
+                            .withLongitude(naviLng)
+                            .build();
+
+                    mIALocationManager.requestWayfindingUpdates(mWayfindingDestination, mWayfindingListener);
+                    navi1.setText("cancel navigation");
+                    cardVisible=true;
+                    poiCard.setVisibility(View.VISIBLE);
+
+                }
+            }
+        });
 
         scrollableNumberPickerA=(ScrollableNumberPicker)findViewById(R.id.up_down);
         mSlidingPanel = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
@@ -463,7 +500,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         side.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this,chat.class);
                 List<Feature> featureListChat=featureCollection.features();
                 if(!chatList.isEmpty()){
                     chatList.clear();
@@ -476,6 +512,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     }
 
                 }
+                Intent intent = new Intent(MainActivity.this,chat.class);
                 intent.putExtra("list",chatList);
                 startActivity(intent);
             }
@@ -794,53 +831,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-
-
-
-
-
-
     @Override
     public boolean onMapClick(@NonNull LatLng point) {
-
-
-
-        navi1 = findViewById(R.id.poinavigatebutton);
-        navi1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // indoorBuildingSource.setGeoJson(loadJsonFromAsset("fifth.geojson"));
-                if(check) {
-
-                    navi1.setText("start navigation");
-                    mCurrentRoute = null;
-                    mWayfindingDestination = null;
-                    mIALocationManager.removeWayfindingUpdates();
-                    updateRouteVisualization();
-                    check = false;
-
-                }
-                else
-                {
-                    check = true;
-
-
-                    mWayfindingDestination = new IAWayfindingRequest.Builder()
-                            .withFloor(4)
-                            .withLatitude(point.getLatitude())
-                            .withLongitude(point.getLongitude())
-                            .build();
-
-                    mIALocationManager.requestWayfindingUpdates(mWayfindingDestination, mWayfindingListener);
-                    navi1.setText("cancel navigation");
-                    cardVisible=true;
-                    poiCard.setVisibility(View.VISIBLE);
-
-                }
-            }
-        });
-
-
         //....................................................................................................................................
         final PointF pixel = mapboxMap.getProjection().toScreenLocation(point);
         List<Feature> features = mapboxMap.queryRenderedFeatures(pixel, "poi-layer");
@@ -950,6 +942,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
     private LatLng convertToLatLng(Feature feature) {
         Point symbolPoint = (Point) feature.geometry();
+        naviLat=symbolPoint.latitude();
+        naviLng=symbolPoint.longitude();
         return new LatLng(symbolPoint.latitude(), symbolPoint.longitude());
     }
 
